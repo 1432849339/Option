@@ -47,13 +47,35 @@ void CMdCallback::OnSafeConnect(CConnectionInterface *lpConnection)
 
 void CMdCallback::OnRegister(CConnectionInterface *lpConnection)
 {
-    puts("CMdCallback::OnRegister");
+	LOG(INFO) << "CMdCallback::OnRegister";
 }
 
 void CMdCallback::OnClose(CConnectionInterface *lpConnection)
 {
 	LOG(ERROR) << "CMdCallback::OnClose 连接断开!";
-	abort();
+	//abort();
+	lpReqMode->CloseSelf();
+	lpReqMode->InitConn();
+	if (0 != lpReqMode->ReqFunction331100())
+	{
+		LOG(ERROR) << "登陆失败!";
+		return ;
+	}
+	puts("**************************************************************\n");
+	LOG(WARNING) << "期权代码个数:" << lpReqMode->GetOptionCode().size();
+	puts("**************************************************************\n");
+	for (auto &it : lpReqMode->GetOptionCode())
+	{
+		if (0 != lpReqMode->SubFunction26(ISSUE_TYPE_HQ_SECU, it.second.option_code))
+		{
+			LOG(ERROR) << "订阅期权行情失败!";
+			return ;
+		}
+	}
+	this_thread::sleep_for(chrono::seconds(20));
+	puts("**************************************************************\n");
+	LOG(WARNING) << "订阅成功的代码数量:" << Subscried.size();
+	puts("**************************************************************\n");
 }
 
 void CMdCallback::OnSent(CConnectionInterface *lpConnection, int hSend, void *reserved1, void *reserved2, int nQueuingData)
@@ -130,6 +152,7 @@ void CMdCallback::OnReceivedBizMsg(CConnectionInterface *lpConnection, int hSend
 							lpUnPacker_key->SetCurrentDatasetByIndex(0);
 							int64_t option_code = atoll(lpUnPacker_key->GetStr("option_code"));
 							Subscried.emplace(option_code, lpReqMode->GetOptionCode()[option_code]);
+							puts("订阅成功\n");
 						}
 						lpUnPacker_key->Release();
 					}	

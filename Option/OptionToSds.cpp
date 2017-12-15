@@ -59,21 +59,21 @@ int InitConnAndSubscribe(CMdRequestMode* lp_OptionMdMode)
 		LOG(WARNING) << "等待期权代码信息返回" << endl;
 		this_thread::sleep_for(chrono::seconds(2));
 	}
-	LOG(WARNING) << "**************************************************************";
-	LOG(WARNING) << "期权代码个数:" << lp_OptionMdMode->GetOptionCode().size() << endl;
-	LOG(WARNING) << "**************************************************************";
+	puts("**************************************************************\n");
+	LOG(WARNING) << "期权代码个数:" << lp_OptionMdMode->GetOptionCode().size();
+	puts("**************************************************************\n");
 	for (auto &it : lp_OptionMdMode->GetOptionCode())
 	{
 		if (0 != lp_OptionMdMode->SubFunction26(ISSUE_TYPE_HQ_SECU, it.second.option_code))
 		{
 			LOG(ERROR) << "订阅期权行情失败!";
-			return -3;
+			return -1;
 		}
 	}
 	this_thread::sleep_for(chrono::seconds(20));
-	LOG(WARNING) << "**************************************************************";
+	puts("**************************************************************\n");
 	LOG(WARNING) << "订阅成功的代码数量:" << Subscried.size();
-	LOG(WARNING) << "**************************************************************";
+	puts("**************************************************************\n");
 	return 0;
 }
 

@@ -83,7 +83,12 @@ public:
 	void CloseSelf()
 	{
 		lpConnection->Release();
-		lpConfig->Release();
+		lpConnection = nullptr;
+	}
+
+	void CloseConn()
+	{
+		lpConnection->Close();
 	}
 public:
 	string m_opUserToken;

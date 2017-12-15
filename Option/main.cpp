@@ -20,9 +20,9 @@ int main(int argc,char** argv)
 	ison::base::iblog_v(1002);
 	ison::base::iblog_stderrthreshold(1);
 	ison::base::iblog_logbufsecs(1);
-	LOG(WARNING) << "**************************************************************";
-	LOG(WARNING) << "======================期权行情程序启动========================";
-	LOG(WARNING) << "**************************************************************";
+	puts("**************************************************************\n");
+	puts("======================期权行情程序启动========================\n");
+	puts("**************************************************************\n");
 
 	date = GetCurDate();
 	int handle = 0;
@@ -42,6 +42,7 @@ int main(int argc,char** argv)
 		}
 		thread write2shm(OpthqToOptionMarket, std::ref(handle));
 		write2shm.join();
+		lp_OptionMdMode->CloseConn();
 		while (TimerExit())
 		{
 			this_thread::sleep_for(chrono::milliseconds(1000));
@@ -54,8 +55,8 @@ int main(int argc,char** argv)
 	}
 	shmClose(shm_name);
 	LOG(INFO) << GetCurTime();
-	LOG(WARNING) << "**************************************************************";
-	LOG(WARNING) << "======================结束期权行情对的接收====================";
-	LOG(WARNING) << "**************************************************************";
+	puts("**************************************************************\n");
+	puts("======================结束期权行情对的接收====================\n");
+	puts("**************************************************************\n");
     return 0;
 }
